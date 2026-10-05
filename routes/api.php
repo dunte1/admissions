@@ -16,3 +16,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::post('/program/eligibility', [ProgramEligibilityController::class, 'check'])->name('api.program.eligibility');
 Route::get('/program/{programId}/requirements', [ProgramEligibilityController::class, 'getRequirements']);
+
+// API v1 Routes
+require_once __DIR__ . '/api/v1.php';

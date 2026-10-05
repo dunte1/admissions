@@ -17,3 +17,9 @@ Thumbs.db
 /dist
 /production_build
 /testsprite_tests
+*.zip
+*.sql
+storage.zip
+app.zip*.sqlite
+*.sqlite3
+database/*.sqlite

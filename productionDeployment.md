@@ -2,6 +2,8 @@
 
 ## Admission Portal - Production Deployment Instructions
 
+**Project Start Date:** March 13, 2027
+
 ### 1. Upload & Extract
 
 Upload `dunco-pro.zip` to your server (e.g., via FTP, SSH, or hosting panel).
@@ -214,4 +216,4 @@ For issues, check:
 - Web server error logs
 - PHP error logs
 
-Generated: April 2026
+Generated: July 2026

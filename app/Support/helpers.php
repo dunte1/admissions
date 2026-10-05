@@ -82,7 +82,7 @@ if (!function_exists('app_footer')) {
             }
 
             if ($school->custom_footer_text) {
-                return $school->custom_footer_text;
+                return e($school->custom_footer_text);
             }
         }
 
@@ -93,12 +93,12 @@ if (!function_exists('app_footer')) {
         $footerText = system_setting('footer_text');
 
         if ($footerText) {
-            return $footerText;
+            return e($footerText);
         }
 
         $schoolName = $school?->name ?? system_setting('system_name', config('app.name'));
 
-        return '© ' . date('Y') . ' ' . $schoolName . '. Powered by Duncowebsolutions';
+        return '© ' . date('Y') . ' ' . e($schoolName) . '. Powered by Duncowebsolutions';
     }
 }
 

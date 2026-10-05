@@ -75,16 +75,37 @@ class FileUploadService
             'jpg' => 'image/jpeg',
             'png' => 'image/png',
             'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
         ];
+
+        // Validate by extension first
+        $extension = strtolower($file->getClientOriginalExtension());
+        if (!in_array($extension, $allowedTypes)) {
+            $errors[] = 'Invalid file type. Allowed types: ' . implode(', ', $allowedTypes);
+            return $errors;
+        }
 
         $allowedMimes = array_values(array_intersect_key($mimeTypes, array_flip($allowedTypes)));
 
-        if ($file && !in_array($file->getMimeType(), $allowedMimes)) {
-            $errors[] = 'Invalid file type. Allowed types: ' . implode(', ', $allowedTypes);
+        // Validate MIME type
+        $mimeType = $file->getMimeType();
+        if (!in_array($mimeType, $allowedMimes)) {
+            $errors[] = 'Invalid file content. The file appears to be a different format.';
+            return $errors;
         }
 
-        if ($file && $file->getSize() > $maxSize * 1024) {
+        // Validate file size
+        if ($file->getSize() > $maxSize * 1024) {
             $errors[] = "File size must not exceed {$maxSize}KB";
+            return $errors;
+        }
+
+        // Validate filename - prevent path traversal
+        $originalName = $file->getClientOriginalName();
+        if (str_contains($originalName, '..') || str_contains($originalName, '/') || str_contains($originalName, '\\')) {
+            $errors[] = 'Invalid filename';
+            return $errors;
         }
 
         return $errors;

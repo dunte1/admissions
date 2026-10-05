@@ -10,7 +10,7 @@ if (file_exists($configPath)) {
 return [
     'name' => $appConfig['app']['name'] ?? env('APP_NAME', 'Admission Portal'),
     'env' => $appConfig['app']['env'] ?? env('APP_ENV', 'local'),
-    'debug' => $appConfig['app']['debug'] ?? env('APP_DEBUG', true),
+    'debug' => $appConfig['app']['debug'] ?? env('APP_DEBUG', false),
     'url' => $appConfig['app']['url'] ?? env('APP_URL', 'http://localhost'),
 
     'application_fee' => $appConfig['application_fee'] ?? env('APPLICATION_FEE', 2000),

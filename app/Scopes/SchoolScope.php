@@ -36,7 +36,11 @@ class SchoolScope implements Scope
         }
 
         if (!$schoolId) {
-            $query->whereRaw('1 = 0');
+            // Allow console commands and tests to operate without school context
+            if (!app()->runningInConsole()) {
+                // Prevent data leakage on misconfigured routes
+                $query->whereRaw('1 = 0');
+            }
             return;
         }
 

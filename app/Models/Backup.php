@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Backup extends Model
 {
-    use HasFactory;
+    use HasFactory, SchoolScope;
 
     protected $fillable = [
         'type',

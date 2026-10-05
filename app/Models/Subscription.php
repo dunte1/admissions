@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Subscription extends Model
 {
-    use HasFactory;
+    use HasFactory, SchoolScope;
 
     protected $fillable = [
         'school_id',

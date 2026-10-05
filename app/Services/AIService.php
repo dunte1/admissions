@@ -113,19 +113,14 @@ class AIService
         ];
 
         try {
-            $request = Http::timeout(30)
+            $response = Http::timeout(30)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->apiKey,
                     'Content-Type' => 'application/json',
                     'HTTP-Referer' => config('app.url', 'https://example.com'),
                     'X-Title' => config('app.name', 'Admission Portal'),
-                ]);
-            
-            if (config('services.openrouter.disable_ssl_verify', false)) {
-                $request = $request->withOptions(['verify' => false]);
-            }
-            
-            $response = $request->post($this->baseUrl . '/chat/completions', [
+                ])
+                ->post($this->baseUrl . '/chat/completions', [
                     'model' => $this->model,
                     'messages' => $messages,
                     'max_tokens' => $this->maxTokens,
@@ -138,6 +133,7 @@ class AIService
                 $reply = $this->cleanResponse($reply);
 
                 $this->saveToHistory($cacheKey, $message, $reply);
+                $this->saveToDatabase($message, $reply, $context, $data['usage'] ?? null);
 
                 $escalate = $this->checkForEscalation($message);
                 if ($escalate) {
@@ -428,6 +424,25 @@ class AIService
         }
 
         Cache::put($cacheKey, $history, now()->addHours(24));
+    }
+
+    protected function saveToDatabase(string $message, string $reply, array $context, ?array $usage): void
+    {
+        try {
+            \App\Models\ChatHistory::saveConversation(
+                userId: $context['user_id'] ?? auth()->id(),
+                sessionId: $context['session_id'] ?? session()->getId(),
+                mode: $context['mode'] ?? 'sales',
+                message: $message,
+                response: $reply,
+                context: $context,
+                tokensUsed: $usage['total_tokens'] ?? 0
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to save chat history to database', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function clearHistory(?string $sessionId = null): void

@@ -27,7 +27,7 @@ class RoleMiddleware
                 return redirect()->route('super-admin.dashboard');
             }
             
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('home');
         }
 
         return $next($request);

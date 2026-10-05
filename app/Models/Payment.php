@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use HasFactory, SchoolScope;
+    use HasFactory, SchoolScope, SoftDeletes;
 
     protected $fillable = [
         'school_id',
@@ -199,7 +200,8 @@ class Payment extends Model
 
     public static function generateIdempotencyKey(string $applicationId, string $phone, string $method): string
     {
-        return hash('sha256', $applicationId . $phone . $method . now()->format('Y-m-d-H'));
+        $minute = now()->format('Y-m-d-Hi');
+        return hash('sha256', $applicationId . $phone . $method . $minute);
     }
 
     public function generateReceiptNumber(): string

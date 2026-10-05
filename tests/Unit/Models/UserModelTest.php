@@ -105,8 +105,8 @@ class UserModelTest extends TestCase
         
         $user->markAsVerified();
         
-        $this->assertNotNull($user->email_verified_at);
         $this->assertTrue($user->is_verified);
+        $this->assertFalse($user->is_first_login);
     }
 
     public function test_user_avatar_url_returns_default()

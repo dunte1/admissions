@@ -344,7 +344,18 @@ class PaymentService
 
     protected function getPayPalApprovalUrl(Payment $payment, $amount, $currency): string
     {
-        return "https://www.sandbox.paypal.com/checkoutnow?token=" . uniqid();
+        Log::info('PayPal payment initiated (sandbox stub)', [
+            'payment_id' => $payment->id,
+            'amount' => $amount,
+            'currency' => $currency,
+        ]);
+
+        // TODO: Implement actual PayPal API integration
+        // The PayPal API requires a server-side PayPal SDK or direct REST API calls
+        // See: https://developer.paypal.com/docs/checkout/standard/
+        return config('services.paypal.mode') === 'live'
+            ? 'https://www.paypal.com/checkoutnow?token=' . $payment->transaction_id
+            : 'https://www.sandbox.paypal.com/checkoutnow?token=' . $payment->transaction_id;
     }
 
     public function confirmPayment(Payment $payment, array $mpesaData = []): bool

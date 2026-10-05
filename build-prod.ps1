@@ -139,8 +139,23 @@ Write-Host " Production folder ready!" -ForegroundColor Green
 Write-Host " Location: $dest" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host "`nNext steps:" -ForegroundColor Yellow
-Write-Host "  1. Edit $dest\.env with production values" -ForegroundColor White
+Write-Host "  1. Edit $dest\.env with production credentials (DB, MAIL, MPESA, etc.)" -ForegroundColor White
 Write-Host "  2. Zip the folder and upload to your server" -ForegroundColor White
 Write-Host "  3. On server run: php artisan storage:link" -ForegroundColor White
 Write-Host "  4. On server run: php artisan migrate --force" -ForegroundColor White
-Write-Host "  5. On server run: php artisan optimize" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "  === OPTIMIZATION COMMANDS ===" -ForegroundColor Cyan
+Write-Host "  5a. php artisan config:cache    # Cache config files" -ForegroundColor White
+Write-Host "  5b. php artisan route:cache     # Cache routes" -ForegroundColor White
+Write-Host "  5c. php artisan view:cache      # Compile Blade views" -ForegroundColor White
+Write-Host "  5d. php artisan event:cache     # Cache events" -ForegroundColor White
+Write-Host "  5e. php artisan optimize        # Run all optimizations" -ForegroundColor White
+Write-Host "  5f. composer install --optimize-autoloader --no-dev" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "  === CACHE CLEAR (if needed) ===" -ForegroundColor Cyan
+Write-Host "  php artisan optimize:clear      # Clear all cached files" -ForegroundColor White
+Write-Host "" -ForegroundColor White
+Write-Host "  === MONITORING ===" -ForegroundColor Cyan
+Write-Host "  php artisan queue:work          # Start queue worker" -ForegroundColor White
+Write-Host "  php artisan schedule:run        # Run scheduled tasks" -ForegroundColor White
+Write-Host "  php artisan backup:run          # Create initial backup" -ForegroundColor White

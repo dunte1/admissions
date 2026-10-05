@@ -480,7 +480,7 @@ class DashboardController extends Controller
         $notes = $request->notes;
         $processed = 0;
 
-        $applications = Application::whereIn('id', $applicationIds)->get();
+        $applications = Application::with('user')->whereIn('id', $applicationIds)->get();
 
         foreach ($applications as $application) {
             switch ($action) {

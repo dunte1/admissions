@@ -69,12 +69,24 @@ class MultitenancyServiceProvider extends ServiceProvider
             \App\Models\Setting::class,
             \App\Models\Faq::class,
             \App\Models\Inquiry::class,
+            \App\Models\Conversation::class,
+            \App\Models\Broadcast::class,
+            \App\Models\BroadcastRecipient::class,
+            \App\Models\InquiryReply::class,
+            \App\Models\AIConversation::class,
+            \App\Models\AIMessage::class,
+            \App\Models\AILead::class,
+            \App\Models\AIKnowledge::class,
+            \App\Models\ChatHistory::class,
+            \App\Models\Subscription::class,
+            \App\Models\Backup::class,
+            \App\Models\PaymentLog::class,
+            \App\Models\AdmissionLetter::class,
+            \App\Models\LetterTemplate::class,
         ];
 
         foreach ($models as $model) {
-            if (method_exists($model, 'bootTraits')) {
-                continue;
-            }
+            $model::addGlobalScope(new \App\Scopes\SchoolScope());
         }
     }
 }

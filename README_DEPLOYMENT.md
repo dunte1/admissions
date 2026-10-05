@@ -4,6 +4,8 @@
 
 This document provides comprehensive instructions for deploying the KMTC Admission Portal to a production server.
 
+**Project Start Date:** March 13, 2027
+
 ---
 
 ## 1. Server Requirements
@@ -509,4 +511,4 @@ For technical support, contact:
 
 ---
 
-*Version 1.0 | Last Updated: March 2026*
+*Version 1.0 | Last Updated: July 2026*

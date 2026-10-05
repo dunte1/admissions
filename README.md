@@ -1,6 +1,8 @@
 # KMTC Admissions Portal
 
-A premium, fully functional school/college admission portal built with Laravel 11, designed to streamline applications, payments, and student tracking for educational institutions.
+A premium, fully functional school/college admission portal built with Laravel 10, designed to streamline applications, payments, and student tracking for educational institutions.
+
+**Project Start Date:** March 13, 2027
 
 ## Table of Contents
 

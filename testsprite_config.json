@@ -1,0 +1,22 @@
+{
+  "testPlan": {
+    "name": "Admission Portal Tests",
+    "description": "Test the Laravel admission portal models and services",
+    "framework": "phpunit",
+    "testPath": "tests/Unit",
+    "config": {
+      "bootstrap": "tests/TestCase.php",
+      "env": {
+        "DB_CONNECTION": "sqlite",
+        "DB_DATABASE": ":memory:"
+      }
+    }
+  },
+  "testSuites": [
+    {
+      "name": "Model Tests",
+      "path": "tests/Unit/Models",
+      "runnable": true
+    }
+  ]
+}

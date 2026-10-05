@@ -2,6 +2,8 @@
 
 ## Audit Date: 2026-04-02
 
+**Project Start Date:** March 13, 2027
+
 ---
 
 ## FINDINGS SUMMARY

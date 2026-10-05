@@ -35,7 +35,7 @@ class SchoolModelTest extends TestCase
         $school = School::factory()->create();
         $application = Application::factory()->create(['school_id' => $school->id]);
         
-        $this->assertEquals(1, $school->applications()->count());
+        $this->assertEquals(1, $school->applications()->withoutGlobalScopes()->count());
     }
 
     public function test_school_can_have_programs()
@@ -43,7 +43,7 @@ class SchoolModelTest extends TestCase
         $school = School::factory()->create();
         $program = Program::factory()->create(['school_id' => $school->id]);
         
-        $this->assertEquals(1, $school->programs()->count());
+        $this->assertEquals(1, $school->programs()->withoutGlobalScopes()->count());
     }
 
     public function test_school_active_scope_works()

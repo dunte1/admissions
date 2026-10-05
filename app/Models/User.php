@@ -35,6 +35,9 @@ class User extends Authenticatable
         'dark_mode',
         'photo',
         'user_settings',
+        'is_verified',
+        'last_verified_at',
+        'is_first_login',
     ];
 
     protected $hidden = [
