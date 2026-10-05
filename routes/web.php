@@ -661,6 +661,8 @@ Route::middleware('web')->group(function () {
         Route::get('/backups', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'index'])->name('backups.index');
         Route::post('/backups/full', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'createFullBackup'])->name('backups.create-full');
         Route::post('/backups/database', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'createDatabaseBackup'])->name('backups.create-database');
+        Route::post('/backups/upload', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'upload'])->name('backups.upload');
+        Route::post('/backups/restore-upload', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'restoreUpload'])->name('backups.restore-upload');
         Route::get('/backups/{backup}/download', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'download'])->name('backups.download');
         Route::post('/backups/{backup}/restore', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'restore'])->name('backups.restore');
         Route::delete('/backups/{backup}', [\App\Http\Controllers\SuperAdmin\BackupController::class, 'destroy'])->name('backups.destroy');

@@ -93,6 +93,21 @@
     
     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-cloud-upload-alt mr-2 text-purple-600"></i> Upload Backup
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">Upload an external .zip or .sql backup file (max 512MB).</p>
+        <form action="{{ route('super-admin.backups.upload') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="file" name="backup_file" accept=".zip,.sql" required
+                   class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 mb-3">
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                <i class="fas fa-upload mr-2"></i> Upload Backup File
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
             <i class="fas fa-trash-alt mr-2 text-red-600"></i> Cleanup Old Backups
         </h3>
         <p class="text-sm text-gray-600 mb-4">Remove backups older than 30 days to free up storage.</p>
@@ -103,6 +118,33 @@
             </button>
         </form>
     </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-file-import mr-2 text-orange-600"></i> Restore from Uploaded Backup
+    </h3>
+    <p class="text-sm text-gray-600 mb-4">Upload a .zip or .sql backup and restore it into this system. This overwrites current data.</p>
+    <form action="{{ route('super-admin.backups.restore-upload') }}" method="POST" enctype="multipart/form-data"
+          onsubmit="return confirm('This will OVERWRITE current data with the uploaded backup. Continue?');">
+        @csrf
+        <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Backup file</label>
+                <input type="file" name="restore_file" accept=".zip,.sql" required
+                       class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
+            </div>
+            <div class="sm:w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm</label>
+                <input type="text" name="confirm" placeholder="Type RESTORE" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+            </div>
+            <button type="submit"
+                    class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors">
+                <i class="fas fa-history mr-2"></i> Restore Uploaded Backup
+            </button>
+        </div>
+    </form>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

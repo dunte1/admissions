@@ -118,4 +118,40 @@ class BackupController extends Controller
             return redirect()->back()->with('error', 'Cleanup failed: ' . $e->getMessage());
         }
     }
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|file|mimes:zip,sql|max:524288',
+        ], [
+            'backup_file.mimes' => 'Only .zip and .sql backup files are allowed.',
+            'backup_file.max' => 'Backup file must be 512MB or smaller.',
+        ]);
+
+        try {
+            $backup = $this->backupService->uploadExternalBackup($request->file('backup_file'), auth()->id());
+            return redirect()->back()->with('success', 'Backup uploaded: ' . $backup->file_name);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Upload failed: ' . $e->getMessage());
+        }
+    }
+
+    public function restoreUpload(Request $request)
+    {
+        $request->validate([
+            'restore_file' => 'required|file|mimes:zip,sql|max:524288',
+            'confirm' => 'required',
+        ], [
+            'restore_file.mimes' => 'Only .zip and .sql backup files are allowed.',
+            'restore_file.max' => 'Backup file must be 512MB or smaller.',
+            'confirm.required' => 'You must confirm the restore action.',
+        ]);
+
+        try {
+            $this->backupService->restoreFromUploadedFile($request->file('restore_file'));
+            return redirect()->back()->with('success', 'Uploaded backup restored successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Restore failed: ' . $e->getMessage());
+        }
+    }
 }

@@ -433,4 +433,144 @@ class BackupService
             'last_backup' => Backup::successful()->latest()->first(),
         ];
     }
+
+    /**
+     * Accept an externally uploaded backup file (zip or sql) and register it.
+     */
+    public function uploadExternalBackup($file, ?int $createdBy = null): Backup
+    {
+        if (!$file || !$file->isValid()) {
+            throw new \Exception('Invalid uploaded file.');
+        }
+
+        $original = $file->getClientOriginalName();
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, ['zip', 'sql'], true)) {
+            throw new \Exception('Only .zip and .sql backup files are allowed.');
+        }
+
+        if ($file->getSize() > 512 * 1024 * 1024) {
+            throw new \Exception('Backup file must be 512MB or smaller.');
+        }
+
+        $timestamp = now()->format('Y-m-d_His');
+        $safeName = 'uploaded_' . $timestamp . '_' . preg_replace('/[^A-Za-z0-9._-]/', '_', $original);
+        $filePath = $this->backupPath . '/' . $safeName;
+
+        $file->storeAs($this->backupPath, $safeName, 'local');
+
+        $type = $ext === 'sql' ? Backup::TYPE_DATABASE : Backup::TYPE_FULL;
+        $backup = Backup::create([
+            'type' => $type,
+            'status' => Backup::STATUS_COMPLETED,
+            'file_path' => $filePath,
+            'file_name' => $safeName,
+            'file_size' => Storage::disk('local')->size($filePath),
+            'created_by' => $createdBy ?? auth()->id(),
+        ]);
+
+        Log::info('External backup uploaded', [
+            'backup_id' => $backup->id,
+            'original_name' => $original,
+        ]);
+
+        return $backup;
+    }
+
+    /**
+     * Restore from an uploaded backup file (zip or sql) without requiring a prior system record.
+     */
+    public function restoreFromUploadedFile($file): bool
+    {
+        if (!$file || !$file->isValid()) {
+            throw new \Exception('Invalid uploaded file.');
+        }
+
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, ['zip', 'sql'], true)) {
+            throw new \Exception('Only .zip and .sql backup files are allowed.');
+        }
+
+        if ($file->getSize() > 512 * 1024 * 1024) {
+            throw new \Exception('Backup file must be 512MB or smaller.');
+        }
+
+        $timestamp = now()->format('Y-m-d_His');
+        $tempName = 'restore_upload_' . $timestamp . '.' . $ext;
+        $tempPath = storage_path('app/' . $this->backupPath . '/' . $tempName);
+        $file->move(storage_path('app/' . $this->backupPath), $tempName);
+
+        try {
+            if ($ext === 'sql') {
+                $this->restoreSqlFile($tempPath);
+            } else {
+                $zip = new ZipArchive();
+                if ($zip->open($tempPath) !== true) {
+                    throw new \Exception('Failed to open uploaded backup archive');
+                }
+                $this->restoreFullBackup($zip);
+                $zip->close();
+            }
+
+            Log::warning('Backup restored from uploaded file', [
+                'file' => $tempName,
+                'user_id' => auth()->id(),
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+            Log::error('Uploaded backup restore failed', ['error' => $e->getMessage()]);
+            throw $e;
+        } finally {
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+        }
+    }
+
+    protected function restoreSqlFile(string $sqlPath): void
+    {
+        if (!file_exists($sqlPath)) {
+            throw new \Exception('SQL backup file not found');
+        }
+
+        $driver = DB::connection()->getDriverName();
+        $sql = file_get_contents($sqlPath);
+
+        if ($driver === 'sqlite') {
+            $pdo = DB::connection()->getPdo();
+            $pdo->exec($sql);
+            return;
+        }
+
+        if ($driver === 'mysql') {
+            $database = config('database.connections.mysql.database');
+            $username = config('database.connections.mysql.username');
+            $password = config('database.connections.mysql.password');
+            $host = config('database.connections.mysql.host', '127.0.0.1');
+
+            $cnf = tempnam(sys_get_temp_dir(), 'mycnf_');
+            file_put_contents($cnf, "[client]\nhost={$host}\nuser={$username}\npassword={$password}\n");
+            @chmod($cnf, 0600);
+
+            $cmd = sprintf(
+                'mysql --defaults-extra-file=%s %s < %s',
+                escapeshellarg($cnf),
+                escapeshellarg($database),
+                escapeshellarg($sqlPath)
+            );
+            exec($cmd, $output, $returnVar);
+            @unlink($cnf);
+
+            if ($returnVar !== 0) {
+                throw new \Exception('MySQL restore failed: ' . implode(' ', $output));
+            }
+            return;
+        }
+
+        throw new \Exception('Unsupported database driver for SQL restore: ' . $driver);
+    }
 }
