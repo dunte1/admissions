@@ -61,21 +61,24 @@ class FixAdminAccess extends Command
         
         if (!$user) {
             $this->warn("User not found - creating...");
-            
+
+            $plainPassword = \Illuminate\Support\Str::random(16);
+
             $user = User::withoutGlobalScopes()->create([
                 'first_name' => 'System',
                 'last_name' => 'Administrator',
                 'email' => $email,
-                'password' => Hash::make('password123'),
+                'password' => Hash::make($plainPassword),
                 'phone' => '+254700000001',
                 'role' => 'admin',
                 'school_id' => $school->id,
                 'email_verified_at' => now(),
                 'is_active' => true,
             ]);
-            
+
             $user->assignRole('admin');
             $this->info("User created with admin role");
+            $this->warn("Temporary password (share securely, change on first login): {$plainPassword}");
         } else {
             $this->info("User found: {$user->fullName()}");
             
@@ -116,10 +119,13 @@ class FixAdminAccess extends Command
         $this->info("Email Verified: Yes");
         $this->info("Account Active: Yes");
         $this->newLine();
-        $this->info("You can now login at /login with:");
-        $this->info("Email: {$user->email}");
-        $this->info("Password: password123");
-        
+        $this->info("Login at /login with the email above.");
+        if (isset($plainPassword)) {
+            $this->warn("Temporary password: {$plainPassword} (change after first login)");
+        } else {
+            $this->info("Use the existing password for this account. Reset via /forgot-password if needed.");
+        }
+
         return 0;
     }
 }

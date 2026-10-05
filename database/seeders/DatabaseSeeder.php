@@ -74,7 +74,7 @@ class AdminUserSeeder extends Seeder
             $user = User::withoutGlobalScopes()->firstOrCreate(
                 ['email' => $admin['email']],
                 array_merge($admin, [
-                    'password' => Hash::make('password123'),
+                    'password' => Hash::make(\Illuminate\Support\Str::random(16)),
                     'email_verified_at' => now(),
                     'is_active' => true,
                     'school_id' => $schoolId,

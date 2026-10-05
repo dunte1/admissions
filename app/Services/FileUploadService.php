@@ -7,26 +7,36 @@ use Illuminate\Support\Facades\Storage;
 
 class FileUploadService
 {
-    public function uploadFile($file, string $directory, ?string $oldPath = null, ?int $schoolId = null): ?string
+    public const DEFAULT_ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    public const DEFAULT_MAX_SIZE_KB = 5120;
+
+    public function uploadFile($file, string $directory, ?string $oldPath = null, ?int $schoolId = null, array $allowedExtensions = self::DEFAULT_ALLOWED_EXTENSIONS, int $maxSizeKb = self::DEFAULT_MAX_SIZE_KB): ?string
     {
         if (!$file) {
             return $oldPath;
+        }
+
+        $errors = $this->validateFile($file, $allowedExtensions, $maxSizeKb);
+        if (!empty($errors)) {
+            throw new \InvalidArgumentException(implode(' ', $errors));
         }
 
         if ($oldPath) {
             $this->deleteFile($oldPath);
         }
 
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = time() . '_' . uniqid() . '.' . $extension;
+
         $schoolId = $schoolId ?? School::getCurrentId();
-        
+
         if ($schoolId) {
             $directory = "schools/{$schoolId}/{$directory}";
         }
-        
+
         $path = $file->storeAs($directory, $filename, 'public');
-        
+
         return $path;
     }
 

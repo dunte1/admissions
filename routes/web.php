@@ -104,9 +104,9 @@ Route::middleware('web')->group(function () {
     Route::prefix('admin-portal')->group(function () {
         Route::middleware('guest')->group(function () {
             Route::get('/login', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'showLogin'])->name('super-admin.login');
-            Route::post('/login', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'login'])->name('super-admin.login.submit');
+            Route::post('/login', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'login'])->middleware('throttle:5,1')->name('super-admin.login.submit');
             Route::get('/forgot-password', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'showForgotPassword'])->name('super-admin.password.request');
-            Route::post('/forgot-password', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'sendResetLink'])->name('super-admin.password.email');
+            Route::post('/forgot-password', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'sendResetLink'])->middleware('throttle:5,1')->name('super-admin.password.email');
             Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'showResetPassword'])->name('super-admin.password.reset');
             Route::post('/reset-password', [\App\Http\Controllers\Auth\SuperAdminAuthController::class, 'resetPassword'])->name('super-admin.password.update');
         });
@@ -126,11 +126,11 @@ Route::middleware('web')->group(function () {
 
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
         Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
         Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-        Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
+        Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:5,1');
         Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
         

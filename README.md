@@ -405,17 +405,20 @@ numprocs=4
 
 ## Default Login Credentials
 
-### Super Admin
+> **SECURITY:** Default/demo passwords below are for **local development only**.
+> After seeding or deploying, **change every password** and enable 2FA for admin accounts.
+
+### Super Admin (local seed)
 - **Email**: superadmin@admin.com
-- **Password**: password
+- **Password**: use password reset or `php artisan app:check-admin-status` (generates a random password)
 
 ### Admin Users (after seeding)
-- **Email**: admin@kmtc.ac.ke
-- **Password**: password123
+- Seeded admin accounts now receive **random passwords**.
+- Retrieve or reset via: `php artisan app:check-admin-status {email}` or the forgot-password flow.
 
-### Test Student
+### Test Student (local only)
 - **Email**: student@test.com
-- **Password**: student123
+- **Password**: student123 (local demo only — change in production)
 
 ## Testing
 
